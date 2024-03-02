@@ -1,0 +1,16 @@
+library ieee;
+use ieee.std_logic_1164.all;
+
+entity alu is generic (width: integer := 32);
+	port (a: in std_logic_vector (width-1 downto 0);
+			b: in std_logic_vector (width-1 downto 0);
+			control: in std_logic_vector(1 downto 0);
+			result: out std_logic_vector(width-1 downto 0);
+			flags: out std_logic_vector(3 downto 0)); -- zero, neg, carry, overflow
+end alu;
+
+architecture synth of alu is
+	signal zero, neg, carry, overflow: std_logic;
+begin
+
+end;

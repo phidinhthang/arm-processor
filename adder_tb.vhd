@@ -1,0 +1,85 @@
+library ieee;
+use ieee.std_logic_1164.all;
+use ieee.std_logic_textio.all;
+use std.textio.all;
+use ieee.numeric_std.all;
+
+entity adder_tb is
+end adder_tb;
+
+architecture sim of adder_tb is
+	component adder generic (width: integer := 32);
+		port (a, b: in std_logic_vector(width-1 downto 0);
+				cin: in std_logic;
+				y: out std_logic_vector(width-1 downto 0);
+				cout: out std_logic);		
+	end component;
+	signal clk: std_logic;
+	signal a, b: std_logic_vector(3 downto 0);
+	signal cin: std_logic;
+	signal y: std_logic_vector(3 downto 0);
+	signal cout: std_logic;
+	signal ytrue: std_logic_vector(3 downto 0);
+	signal couttrue: std_logic;
+begin
+	dut: adder generic map (4)
+		port map (a, b, cin, y, cout);
+	
+	process begin
+		clk <= '1'; wait for 5 ns;
+		clk <= '0'; wait for 5 ns;
+	end process;
+	
+	process is
+		file tv: text;
+		variable L: line;
+		variable tv_a: std_logic_vector(3 downto 0);
+		variable tv_b: std_logic_vector(3 downto 0);
+		variable tv_cin: std_logic;
+		variable tv_y: std_logic_vector(3 downto 0);
+		variable tv_cout: std_logic;
+		variable dummy: character;
+		variable vectornum: integer := 0;
+		variable errors: integer := 0;
+	begin
+		file_open (tv, "./adder_tb.txt", read_mode);
+		readline (tv, L);
+		wait for 10 ns;
+		
+		while not endfile (tv) loop
+			wait until falling_edge (clk);
+			
+			readline (tv, L);
+			read (L, tv_a); read (L, dummy); a <= tv_a after 1 ns;
+			read (L, tv_b); read (L, dummy); b <= tv_b after 1 ns;
+			read (L, tv_cin); read (L, dummy); cin <= tv_cin after 1 ns;
+			read (L, tv_y); read (L, dummy); ytrue <= tv_y after 1 ns;
+			read (L, tv_cout); read (L, dummy); couttrue <= tv_cout after 1 ns;
+			
+			wait until rising_edge (clk);
+			wait for 1 ns;
+			
+			if cout /= couttrue or y /= ytrue then
+				report "Error: cout = " & std_logic'image(cout) &
+							" couttrue = " & std_logic'image(couttrue) &
+							" y = " & integer'image(to_integer(signed(y))) &
+							" ytrue = " & integer'image(to_integer(signed(ytrue)));
+				errors := errors + 1;
+			end if;
+			
+			vectornum := vectornum + 1;
+		end loop;
+		
+		if errors = 0 then
+			report "NO ERRORS -- " &
+						integer'image(vectornum) &
+						" tests completed successfully."
+						severity failure;
+		else
+			report integer'image(vectornum) &
+						" tests completed, errors = " &
+						integer'image(errors)
+						severity failure;
+		end if;
+	end process;
+end;

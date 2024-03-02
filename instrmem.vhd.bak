@@ -1,0 +1,49 @@
+library ieee;
+use ieee.std_logic_1164.all;
+use ieee.numeric_std.all;
+use ieee.std_logic_textio.all;
+use std.textio.all;
+
+entity instrmem is generic (addrlen: integer := 32;
+										wordlen: integer := 32;
+										numbyte: integer := 64;
+										datafile: string);
+	port (addr: in std_logic_vector (addrlen-1 downto 0);
+			instr: out std_logic_vector (wordlen-1 downto 0));
+end instrmem;
+
+architecture synth of instrmen is
+	type mem_array is array (numbyte-1 downto 0) of std_logic_vector(7 downto 0);
+	signal mem_block: mem_array := (others => (others => 0));
+begin
+	process is 
+		file tv: text;
+		variable L: line;
+		variable currword: std_logic_vector (wordlen-1 downto 0);
+		variable currbyte: std_logic_vector (7 downto 0);
+		variable curraddr: std_logic_vector (addrlen-1 downto 0) := (others => '0');
+	begin
+		file_open (tv, datafile, read_mode);
+		
+		l1: while not endfile (tv) loop
+			readline (tv, L);
+			read (L, currword);
+			l2: for i in 0 to (wordlen/8)-1 loop
+				read (currword, currbyte);
+				mem_block(to_integer(unsigned(curraddr))) := currbyte;
+				curraddr := curraddr + '1';
+				
+				if to_integer(unsigned(curraddr)) >= numbyte then
+					exit l1;
+				end if;
+			end loop l2;
+		end loop l1;
+		wait;
+	end process;
+	
+	process (addr) begin
+		for i in 0 to (wordlen/8)-1 loop
+			instr(wordlen-1-i*8 downto wordlen-(i+1)*8) <= mem_block(to_integer(unsigned(addr))+i);
+		end loop;
+	end process;
+end;

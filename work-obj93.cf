@@ -1,0 +1,7 @@
+v 3
+file . "adder.vhd" "20240302162312.000" "20240302232844.366":
+  entity adder at 1( 0) + 0 on 23;
+  architecture synth of adder at 13( 324) + 0 on 24;
+file . "adder_tb.vhd" "20240302162324.000" "20240302232844.370":
+  entity adder_tb at 1( 0) + 0 on 25;
+  architecture sim of adder_tb at 10( 164) + 0 on 26;

@@ -1,0 +1,20 @@
+library ieee;
+use ieee.std_logic_1164.all;
+
+entity datapath is
+	port (clk, reset: in std_logic;
+			Instr: in std_logic_vector(31 downto 0);
+			PC: out std_logic_vector(31 downto 0);
+			ALUResult: out std_logic_vector(31 downto 0);
+			WriteData: out std_logic_vector(31 downto 0);
+			ReadData: in std_logic_vector(31 downto 0);
+			ALUControl: in std_logic_vector(1 downto 0);
+			ALUFLags: out std_logic_vector(3 downto 0));
+end datapath;
+
+architecture behave of datapath is
+	component regfile 
+	
+begin
+
+end;

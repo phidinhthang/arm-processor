@@ -1,0 +1,20 @@
+library IEEE;
+use IEEE.std_logic_1164.all;
+use IEEE.std_logic_textio.all;
+use std.textio.all;
+
+package util is
+ function to_string (SLV : std_logic_vector) return string;
+end package util;
+
+package body util is
+
+----------------------------------------
+  function to_string (SLV : std_logic_vector) return string is
+    variable L : LINE;
+  begin
+    write(L,SLV);
+    return L.all;
+  end function to_string;
+  ----------------------------------------
+end package body util;
